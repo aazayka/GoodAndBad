@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.aazayka.goodandbad.app.MainActivity" >
+
+    <item android:id="@+id/menu_delete_photo"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:title="@string/delete_photo"
+        android:showAsAction="ifRoom"/>
+
+</menu>

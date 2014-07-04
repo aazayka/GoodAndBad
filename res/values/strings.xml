@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">GoodAndBad</string>
+    <string name="action_settings">Settings</string>
+    <string name="tagsText">Теги</string>
+    <string name="commentsText">Примечания</string>
+    <string name="saveButtonText">Сохранить</string>
+    <string name="type_good_text_view">Хорошо</string>
+    <string name="type_bad_text_view">Плохо</string>
+    <string name="title_activity_show_list">Список</string>
+    <string name="title_activity_test">test</string>
+    <string name="delete_item">Удалить</string>
+    <string name="delete_photo">Очистить фотографию</string>
+    <string name="selected_for_delete">Выбрано для удаления</string>
+
+</resources>
