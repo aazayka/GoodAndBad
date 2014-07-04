@@ -110,7 +110,8 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Image.cleanImageView(photoImageView);
+        Log.d(TAG, "onStop");
+        if (item.getImage().isImageExists()) Image.cleanImageView(photoImageView);
     }
 
     private void dispatchTakePictureIntent() {
@@ -147,7 +148,7 @@ public class MainActivity extends ActionBarActivity {
         if (item.getImage().isImageExists()) {
             photoImageView.setImageBitmap(item.getImage().resize(photoImageView.getMaxWidth(), photoImageView.getMaxHeight()));
         } else {
-            ;//photoImageView.setImageResource(android.R.drawable.ic_menu_camera);
+            photoImageView.setImageResource(android.R.drawable.ic_menu_camera);
         }
     }
 
