@@ -230,4 +230,8 @@ public class DBAdapter {
         db.delete("Items", "id=?", new String[]{itemId.toString()});
         db.close();
     }
+
+    public Cursor getTagsCursor() {
+        return rawQuery("SELECT id _id, tag FROM Tags ORDER BY tag", null);
+    }
 }

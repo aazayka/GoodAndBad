@@ -13,5 +13,10 @@
     <string name="delete_item">Удалить</string>
     <string name="delete_photo">Очистить фотографию</string>
     <string name="selected_for_delete">Выбрано для удаления</string>
+    <string name="title_activity_good_and_bad">Good and Bad</string>
+    <string name="title_section1">Теги</string>
+    <string name="title_section2">Список</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_section3">Section 3</string>
 
 </resources>
