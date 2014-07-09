@@ -82,11 +82,14 @@ public class DBAdapter {
         }
     }
 
-    public ArrayList<Item> getAllItems(){
+    public ArrayList<Item> getFilteredItems(Long tag_id){
         ArrayList<Item> items = new ArrayList<Item>();
-
+        String[] tag_filter = new String[]{};
+        if (tag_id != null && tag_id != 0) tag_filter = new String[]{tag_id.toString()};
         open();
-        Cursor cursor = db.rawQuery("SELECT i.comments, ifnull(i.image_path, '') image_path, i.is_good, i.id FROM Items i", null);
+        Cursor cursor = db.rawQuery(
+                "SELECT i.comments, ifnull(i.image_path, '') image_path, i.is_good, i.id FROM Items i, Items_Tags it WHERE i.id = it.item_id AND it.tag_id = ifnull(?, it.tag_id) ",
+                tag_filter);
         cursor.moveToFirst();
         for (Integer i=0; i < cursor.getCount(); i++) {
             Item item = new Item(
@@ -104,6 +107,7 @@ public class DBAdapter {
         close();
         return items;
     }
+
 
     private void open(){
 //        Boolean deleteResult = SQLiteDatabase.deleteDatabase(new File("/data/data/com.aazayka.goodandbad.app/databases/" + "GoodAndBad"));

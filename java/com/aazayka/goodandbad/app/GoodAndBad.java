@@ -7,20 +7,25 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.aazayka.goodandbad.app.R;
 
 public class GoodAndBad extends Activity implements ActionBar.TabListener {
@@ -187,7 +192,7 @@ public class GoodAndBad extends Activity implements ActionBar.TabListener {
             getActivity().startManagingCursor(cursor);
             // now create a new list adapter bound to the cursor.
             // SimpleListAdapter is designed for binding to a Cursor.
-            ListAdapter adapter = new SimpleCursorAdapter(
+            final ListAdapter adapter = new SimpleCursorAdapter(
                     MyApp.getAppContext(), // Context.
                     android.R.layout.simple_list_item_1, // Specify the row template
                     cursor, // Pass in the cursor to bind to.
@@ -198,6 +203,18 @@ public class GoodAndBad extends Activity implements ActionBar.TabListener {
 
             // Bind to our new adapter.
             tagsListView.setAdapter(adapter);
+
+            tagsListView.setOnItemClickListener(new ListView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent intent = new Intent(getActivity(), ShowList.class);
+                    Cursor cursor = (Cursor) adapter.getItem(i);
+                    intent.putExtra(ShowList.EXTRA_TAG_ID, cursor.getLong(cursor.getColumnIndex("_id")));
+                    startActivity(intent);
+                }
+            }
+            );
+
 
             return rootView;
         }

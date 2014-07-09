@@ -24,6 +24,7 @@ public class ShowList extends ActionBarActivity {
     public static final String TAG = "ShowList";
     static final int REQUEST_SAVE_ITEM = 1;
     static final int REQUEST_UPDATE_ITEM = 2;
+    public static final String EXTRA_TAG_ID = "com.aazayka.goodandbad.tag_id";
 
     ListView itemsListView;
     ImageButton addImageButton;
@@ -50,7 +51,9 @@ public class ShowList extends ActionBarActivity {
                                           }
         );
 
-        items = DBAdapter.get().getAllItems();
+        Long tag_id = this.getIntent().getLongExtra(EXTRA_TAG_ID, 0);
+        Log.d(TAG, "tag_id=" + tag_id.toString());
+        items = DBAdapter.get().getFilteredItems(tag_id);
         arrayAdapter = new ItemsArrayAdapter(items);
         itemsListView.setAdapter(arrayAdapter);
 

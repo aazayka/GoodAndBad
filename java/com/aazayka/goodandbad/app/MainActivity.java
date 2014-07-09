@@ -38,6 +38,8 @@ public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = "MainActivity";
     private static final String DIALOG_IMAGE = "image";
+    static final int REQUEST_TAKE_PHOTO = 1;
+    public static final String EXTRA_ITEM_ID = "com.aazayka.goodandbad.item_id";
 
     EditText tagsEditText;
     EditText commentsEditText;
@@ -53,9 +55,6 @@ public class MainActivity extends ActionBarActivity {
     Item item;
 
     File tempFile = null;
-
-    static final int REQUEST_TAKE_PHOTO = 1;
-    public static final String EXTRA_ITEM_ID = "com.aazayka.goodandbad.item_id";
 
     public void onButtonSaveClick(View v){
         String tags = tagsEditText.getText().toString();
