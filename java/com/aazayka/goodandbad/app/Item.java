@@ -44,20 +44,20 @@ public class Item {
             db.deleteItemTags(lastItemId);
         }
         tags = tags.trim();
-        if (!tags.equals("")){
-            String[] tagsArray = tags.split(",|;");
-            for (int i = 0; i < tagsArray.length; i++) {
-                String currentTag = tagsArray[i].trim();
-                Log.d(TAG, "Process tag = " + currentTag);
-                if (!currentTag.equals("")) {
-                    db.insertTag(currentTag);
+        if (tags.equals("")) {
+            tags = MyApp.getAppContext().getString(R.string.empty_tag);
+        }
 
-                    Long tagId = db.getTagId(currentTag);
-                    db.insertItemTag(lastItemId, tagId);
-                }
+        String[] tagsArray = tags.split(",|;");
+        for (int i = 0; i < tagsArray.length; i++) {
+            String currentTag = tagsArray[i].trim();
+            Log.d(TAG, "Process tag = " + currentTag);
+            if (!currentTag.equals("")) {
+                db.insertTag(currentTag);
+
+                Long tagId = db.getTagId(currentTag);
+                db.insertItemTag(lastItemId, tagId);
             }
-        } else {
-            db.deleteItemTags(lastItemId);
         }
 
         return lastItemId;

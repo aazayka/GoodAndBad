@@ -59,7 +59,7 @@
         android:layout_alignLeft="@id/typeRadioGroup"
         android:layout_below="@id/typeRadioGroup"
         android:id="@+id/tagsEditText"
-        android:text="@string/tagsText"
+        android:hint="@string/tagsText"
         />
 
     <EditText
@@ -70,7 +70,7 @@
         android:lines="5"
         android:ems="10"
         android:id="@+id/commentsEditText"
-        android:text="@string/commentsText"
+        android:hint="@string/commentsText"
         android:gravity="top|left"
 
         />

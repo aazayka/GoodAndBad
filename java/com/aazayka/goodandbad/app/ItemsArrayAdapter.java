@@ -2,7 +2,6 @@ package com.aazayka.goodandbad.app;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.net.Uri;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -13,33 +12,30 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created by andrey.zaytsev on 02.06.2014.
  */
 public class ItemsArrayAdapter extends ArrayAdapter<Item> {
     public static final String TAG = "ItemsArrayAdapter";
-//    private final Context context;
     private ArrayList<Item> items;
     private SparseBooleanArray mSelectedItemsIds;
 
     public ItemsArrayAdapter(ArrayList<Item> items) {
-        super(MyApp.getAppContext(), R.layout.item_layout, items);
-//        this.context = context;
+        super(MyApp.getAppContext(), R.layout.item_layout_good, items);
         this.items = items;
         mSelectedItemsIds = new SparseBooleanArray();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
+        Item item = getItem(position);
+//        if (convertView == null) {
             convertView =  ((LayoutInflater) MyApp.getAppContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                    .inflate(R.layout.item_layout, null);
-        }
+                    .inflate(getItemResource(item), null);
+//        }
 
-        Item item = getItem(position);
         Log.d(TAG, "position " + position + "; item_id=" + item.getId().toString() + " is good = " + item.getIsGood());
         TextView listCommentsTextView = (TextView) convertView.findViewById(R.id.listCommentsTextView);
         TextView listTagsTextView = (TextView) convertView.findViewById(R.id.listTagsTextView);
@@ -47,7 +43,10 @@ public class ItemsArrayAdapter extends ArrayAdapter<Item> {
         listCommentsTextView.setText(item.getComments());
         listTagsTextView.setText(item.getTags());
 
-        convertView.setBackgroundColor(getItemColor(position));
+        // Я перекрашу холодильник в желтый цвет
+        if (mSelectedItemsIds.get(position)) {
+            convertView.setBackgroundColor(Color.LTGRAY);
+        }
 
         if (!item.getImage().getImageFilePath().equals("")) {
             Log.d(TAG, "Show image " + item.getImage().getImageFilePath());
@@ -59,15 +58,9 @@ public class ItemsArrayAdapter extends ArrayAdapter<Item> {
         return convertView;
     }
 
-    public int getItemColor(int position) {
-        Item item = items.get(position);
-        if (mSelectedItemsIds.get(position)) {
-            return Color.LTGRAY;
-        } else if (item.getIsGood().equals("Y")) {
-            return Color.GREEN;
-        } else {
-            return Color.RED;
-        }
+    private int getItemResource(Item item) {
+        if (item.getIsGood().equals("Y")) return R.layout.item_layout_good;
+        else return R.layout.item_layout_bad;
     }
 
     public void toggleSelection(int position) {

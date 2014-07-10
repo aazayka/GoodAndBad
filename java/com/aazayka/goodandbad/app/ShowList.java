@@ -3,7 +3,6 @@ package com.aazayka.goodandbad.app;
 import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -16,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -29,18 +28,26 @@ public class ShowList extends Fragment {
     static final int REQUEST_UPDATE_ITEM = 2;
 
     ListView itemsListView;
+    Button tagFilterButton;
 
     private ArrayList<Item> items;
     ItemsArrayAdapter arrayAdapter;
     private int updatePosition;
     private Item oldItem;
 
-    public void filterByTag(long tag_id) {
+    public void filterByTag(Long tag_id, String tag_name) {
         items = DBAdapter.get().getFilteredItems(tag_id);
         Log.d(TAG, "Filter " + tag_id + " count = " + items.size());
         arrayAdapter.clear();
         arrayAdapter.addAll(items);
         arrayAdapter.notifyDataSetChanged();
+        if (tag_id != null && tag_id != 0) {
+            tagFilterButton.setText(tag_name);
+            tagFilterButton.setVisibility(View.VISIBLE);
+        } else {
+            tagFilterButton.setText("");
+            tagFilterButton.setVisibility(View.GONE);
+        }
     }
 
     public void refreshOnAddItem(long item_id) {
@@ -53,6 +60,14 @@ public class ShowList extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.activity_show_list, container, false);
         itemsListView = (ListView) v.findViewById(R.id.itemsListView);
+        tagFilterButton= (Button) v.findViewById(R.id.tagFilterButton);
+        tagFilterButton.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                filterByTag(null, null);
+            }
+        });
+        tagFilterButton.setVisibility(View.GONE);
 
         items = DBAdapter.get().getFilteredItems(null);
         arrayAdapter = new ItemsArrayAdapter(items);
@@ -86,7 +101,6 @@ public class ShowList extends Fragment {
                 mode.setTitle(checkedCount + " " + getResources().getString(R.string.selected_for_delete));
                 // Calls toggleSelection method from ListViewAdapter Class
                 arrayAdapter.toggleSelection(position);
-                itemsListView.getChildAt(position).setBackgroundColor(arrayAdapter.getItemColor(position));
             }
 
             @Override

@@ -34,7 +34,7 @@ import java.util.Date;
 import static android.database.sqlite.SQLiteDatabase.openOrCreateDatabase;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
     private static final String DIALOG_IMAGE = "image";

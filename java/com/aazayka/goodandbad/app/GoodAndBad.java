@@ -263,11 +263,12 @@ public class GoodAndBad extends Activity implements ActionBar.TabListener {
 
                     Cursor cursor = (Cursor) tagsListAdapter.getItem(i);
                     long tag_id = cursor.getLong(cursor.getColumnIndex("_id"));
+                    String tag_name = cursor.getString(cursor.getColumnIndex("tag"));
 
                     if (showlist == null) {
                         Log.e(TAG, "Error on get ShowList fragment");
                     } else {
-                        showlist.filterByTag(tag_id);
+                        showlist.filterByTag(tag_id, tag_name);
                         viewpager.setCurrentItem(SectionsPagerAdapter.ITEM_LIST_PAGE);
                     }
                 }
