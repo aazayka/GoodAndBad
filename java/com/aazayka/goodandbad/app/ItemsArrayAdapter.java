@@ -89,4 +89,6 @@ public class ItemsArrayAdapter extends ArrayAdapter<Item> {
     public SparseBooleanArray getSelectedIds() {
         return mSelectedItemsIds;
     }
+
+
 }

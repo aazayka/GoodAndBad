@@ -13,6 +13,7 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,6 +30,9 @@ import android.widget.Toast;
 import com.aazayka.goodandbad.app.R;
 
 public class GoodAndBad extends Activity implements ActionBar.TabListener {
+
+    private static final String TAG = "GoodAndBad";
+    static final int REQUEST_SAVE_ITEM = 1;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -99,10 +103,22 @@ public class GoodAndBad extends Activity implements ActionBar.TabListener {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_insert:
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivityForResult(intent, REQUEST_SAVE_ITEM);
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_SAVE_ITEM && resultCode == RESULT_OK) {
+            Long item_id = data.getLongExtra(MainActivity.EXTRA_ITEM_ID, 0);
+            ShowList showlist = (ShowList) mSectionsPagerAdapter.getRegisteredFragment(SectionsPagerAdapter.ITEM_LIST_PAGE);
+            showlist.refreshOnAddItem(item_id);
+            ((PlaceholderFragment) mSectionsPagerAdapter.getRegisteredFragment(SectionsPagerAdapter.TAG_PAGE)).refreshList();
+        }
     }
 
     @Override
@@ -126,6 +142,12 @@ public class GoodAndBad extends Activity implements ActionBar.TabListener {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+        private static final int PAGE_COUNT = 2;
+        public static final int TAG_PAGE = 0;
+        public static final int ITEM_LIST_PAGE = 1;
+
+        SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -134,37 +156,60 @@ public class GoodAndBad extends Activity implements ActionBar.TabListener {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            Log.d(TAG, "getItem " + position);
+            switch (position) {
+                case 0:
+                    return PlaceholderFragment.newInstance(position + 1);
+                case 1:
+                    return new ShowList();
+            }
+            return null;
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 2;
+            return PAGE_COUNT;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             Locale l = Locale.getDefault();
             switch (position) {
-                case 0:
+                case TAG_PAGE:
                     return getString(R.string.title_section1).toUpperCase(l);
-                case 1:
+                case ITEM_LIST_PAGE:
                     return getString(R.string.title_section2).toUpperCase(l);
             }
             return null;
         }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment fragment = (Fragment) super.instantiateItem(container, position);
+            registeredFragments.put(position, fragment);
+            return fragment;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            registeredFragments.remove(position);
+            super.destroyItem(container, position, object);
+        }
+
+        public Fragment getRegisteredFragment(int position) {
+            return registeredFragments.get(position);
+        }
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     public static class PlaceholderFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        ListView tagsListView;
+        SimpleCursorAdapter tagsListAdapter;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -181,7 +226,11 @@ public class GoodAndBad extends Activity implements ActionBar.TabListener {
         public PlaceholderFragment() {
         }
 
-        ListView tagsListView;
+
+        public void refreshList (){
+            tagsListAdapter.getCursor().requery();
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
@@ -192,7 +241,7 @@ public class GoodAndBad extends Activity implements ActionBar.TabListener {
             getActivity().startManagingCursor(cursor);
             // now create a new list adapter bound to the cursor.
             // SimpleListAdapter is designed for binding to a Cursor.
-            final ListAdapter adapter = new SimpleCursorAdapter(
+            tagsListAdapter = new SimpleCursorAdapter(
                     MyApp.getAppContext(), // Context.
                     android.R.layout.simple_list_item_1, // Specify the row template
                     cursor, // Pass in the cursor to bind to.
@@ -202,15 +251,25 @@ public class GoodAndBad extends Activity implements ActionBar.TabListener {
                     new int[] { android.R.id.text1});
 
             // Bind to our new adapter.
-            tagsListView.setAdapter(adapter);
+            tagsListView.setAdapter(tagsListAdapter);
 
             tagsListView.setOnItemClickListener(new ListView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    Intent intent = new Intent(getActivity(), ShowList.class);
-                    Cursor cursor = (Cursor) adapter.getItem(i);
-                    intent.putExtra(ShowList.EXTRA_TAG_ID, cursor.getLong(cursor.getColumnIndex("_id")));
-                    startActivity(intent);
+
+                    ViewPager viewpager = (ViewPager) getActivity().findViewById(R.id.pager);
+                    SectionsPagerAdapter pagerAdapter = (SectionsPagerAdapter) viewpager.getAdapter();
+                    ShowList showlist = (ShowList) pagerAdapter.getRegisteredFragment(SectionsPagerAdapter.ITEM_LIST_PAGE);
+
+                    Cursor cursor = (Cursor) tagsListAdapter.getItem(i);
+                    long tag_id = cursor.getLong(cursor.getColumnIndex("_id"));
+
+                    if (showlist == null) {
+                        Log.e(TAG, "Error on get ShowList fragment");
+                    } else {
+                        showlist.filterByTag(tag_id);
+                        viewpager.setCurrentItem(SectionsPagerAdapter.ITEM_LIST_PAGE);
+                    }
                 }
             }
             );

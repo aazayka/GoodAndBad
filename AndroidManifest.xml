@@ -32,10 +32,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".test"
-            android:label="@string/title_activity_test" >
-        </activity>
-        <activity
             android:name=".GoodAndBad"
             android:label="@string/title_activity_good_and_bad" >
             <intent-filter>
