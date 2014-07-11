@@ -13,10 +13,11 @@
     <string name="delete_photo">Очистить фотографию</string>
     <string name="selected_for_delete">Выбрано для удаления</string>
     <string name="title_activity_good_and_bad">Good and Bad</string>
-    <string name="title_section1">Теги</string>
+    <string name="title_section1">Категории</string>
     <string name="title_section2">Список</string>
     <string name="action_insert">Добавить</string>
     <string name="empty_tag">&lt;ХЗ&gt;</string>
+    <string name="error_delete_tag">Невозможно удалить непустую категорию</string>
 
 </resources>
 

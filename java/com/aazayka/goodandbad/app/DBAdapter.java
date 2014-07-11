@@ -234,8 +234,36 @@ public class DBAdapter {
         db.delete("Items", "id=?", new String[]{itemId.toString()});
         db.close();
     }
+    public void deleteTag(Long tag_id) {
+        open();
+        db.delete("Tags", "id=?", new String[]{tag_id.toString()});
+        db.close();
+    }
 
     public Cursor getTagsCursor() {
         return rawQuery("SELECT id _id, tag FROM Tags ORDER BY tag", null);
     }
+
+    public boolean isEmptyTag(Long tag_id) {
+        int cnt = 0;
+        open();
+        Cursor cursor = db.query(
+                "Items_Tags",
+                new String[]{"count(*) cnt"},
+                "tag_id = ?",
+                new String[]{tag_id.toString()},
+                null,
+                null,
+                null,
+                null
+        );
+        if (cursor.moveToFirst()) {
+            cnt = cursor.getInt(cursor.getColumnIndex("cnt"));
+        }
+        Log.d(TAG, "For tag_id=" + tag_id + " count = " + cnt);
+        db.close();
+        return (cnt == 0);
+
+    }
+
 }

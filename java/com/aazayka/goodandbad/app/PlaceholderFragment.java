@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
@@ -73,14 +74,10 @@ public class PlaceholderFragment extends Fragment {
                                                     GoodAndBad.SectionsPagerAdapter pagerAdapter = (GoodAndBad.SectionsPagerAdapter) viewpager.getAdapter();
                                                     ShowList showlist = (ShowList) pagerAdapter.getRegisteredFragment(GoodAndBad.SectionsPagerAdapter.ITEM_LIST_PAGE);
 
-                                                    Cursor cursor = (Cursor) tagsListAdapter.getItem(i);
-                                                    long tag_id = cursor.getLong(cursor.getColumnIndex("_id"));
-                                                    String tag_name = cursor.getString(cursor.getColumnIndex("tag"));
-
                                                     if (showlist == null) {
                                                         Log.e(TAG, "Error on get ShowList fragment");
                                                     } else {
-                                                        showlist.filterByTag(tag_id, tag_name);
+                                                        showlist.filterByTag(getTagId(i), getTagName(i));
                                                         viewpager.setCurrentItem(GoodAndBad.SectionsPagerAdapter.ITEM_LIST_PAGE);
                                                     }
                                                 }
@@ -98,8 +95,7 @@ public class PlaceholderFragment extends Fragment {
                 }
                 selectedItem = position;
 
-                // start the CAB using the ActionMode.Callback defined above
-                mActionMode = getActivity().startActionMode(mActionModeCallback);
+                showMenu(view);
                 view.setSelected(true);
                 return true;
             }
@@ -109,48 +105,50 @@ public class PlaceholderFragment extends Fragment {
         return rootView;
     }
 
-    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+    public void showMenu(View v) {
+        PopupMenu popup = new PopupMenu(getActivity(), v);
 
-        // called when the action mode is created; startActionMode() was called
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Inflate a menu resource providing context menu items
-            MenuInflater inflater = mode.getMenuInflater();
-            // assumes that you have "contexual.xml" menu resources
-            inflater.inflate(R.menu.context_good_and_bad, menu);
-            return true;
-        }
+        // This activity implements OnMenuItemClickListener
+        popup.inflate(R.menu.context_good_and_bad);
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.menu_delete_tag:
+                        delete_tag();
+                        return true;
+                    default:
+                        return false;
+                }
 
-        // the following method is called each time
-        // the action mode is shown. Always called after
-        // onCreateActionMode, but
-        // may be called multiple times if the mode is invalidated.
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false; // Return false if nothing is done
-        }
-
-        // called when the user selects a contextual menu item
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.menu_delete_tag:
-                    show();
-                    // the Action was executed, close the CAB
-                    mode.finish();
-                    return true;
-                default:
-                    return false;
             }
-        }
-
-        // called when the user exits the action mode
-        public void onDestroyActionMode(ActionMode mode) {
-            mActionMode = null;
-            selectedItem = -1;
-        }
-    };
-
-    private void show() {
-        Toast.makeText(getActivity(),
-                String.valueOf(selectedItem), Toast.LENGTH_LONG).show();
+        });
+        popup.show();
     }
+
+    private long getTagId(int position) {
+        Cursor cursor = (Cursor) tagsListAdapter.getItem(position);
+        return cursor.getLong(cursor.getColumnIndex("_id"));
+    }
+
+    private String getTagName(int position) {
+        Cursor cursor = (Cursor) tagsListAdapter.getItem(position);
+        return cursor.getString(cursor.getColumnIndex("tag"));
+    }
+
+    private void delete_tag() {
+        DBAdapter db = DBAdapter.get();
+        Long tag_id = getTagId(selectedItem);
+        Log.d(TAG, "Delete tag " + getTagName(selectedItem));
+        if (db.isEmptyTag(tag_id)) {
+            db.deleteTag(tag_id);
+            refreshList();
+        }
+        else
+            Toast.makeText(getActivity(),
+                    getResources().getString(R.string.error_delete_tag), Toast.LENGTH_LONG).show();
+    }
+
+
 
 }
