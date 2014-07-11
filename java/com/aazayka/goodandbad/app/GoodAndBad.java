@@ -159,7 +159,7 @@ public class GoodAndBad extends Activity implements ActionBar.TabListener {
             Log.d(TAG, "getItem " + position);
             switch (position) {
                 case 0:
-                    return PlaceholderFragment.newInstance(position + 1);
+                    return new PlaceholderFragment();
                 case 1:
                     return new ShowList();
             }
@@ -201,83 +201,5 @@ public class GoodAndBad extends Activity implements ActionBar.TabListener {
             return registeredFragments.get(position);
         }
     }
-
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-        ListView tagsListView;
-        SimpleCursorAdapter tagsListAdapter;
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-
-        public void refreshList (){
-            tagsListAdapter.getCursor().requery();
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_good_and_bad, container, false);
-            tagsListView = (ListView)rootView.findViewById(R.id.tagsListView);
-
-            Cursor cursor = DBAdapter.get().getTagsCursor();
-            getActivity().startManagingCursor(cursor);
-            // now create a new list adapter bound to the cursor.
-            // SimpleListAdapter is designed for binding to a Cursor.
-            tagsListAdapter = new SimpleCursorAdapter(
-                    MyApp.getAppContext(), // Context.
-                    android.R.layout.simple_list_item_1, // Specify the row template
-                    cursor, // Pass in the cursor to bind to.
-                    new String[] {"tag"},
-                    // Parallel array of which template objects to bind to those
-                    // columns.
-                    new int[] { android.R.id.text1});
-
-            // Bind to our new adapter.
-            tagsListView.setAdapter(tagsListAdapter);
-
-            tagsListView.setOnItemClickListener(new ListView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                    ViewPager viewpager = (ViewPager) getActivity().findViewById(R.id.pager);
-                    SectionsPagerAdapter pagerAdapter = (SectionsPagerAdapter) viewpager.getAdapter();
-                    ShowList showlist = (ShowList) pagerAdapter.getRegisteredFragment(SectionsPagerAdapter.ITEM_LIST_PAGE);
-
-                    Cursor cursor = (Cursor) tagsListAdapter.getItem(i);
-                    long tag_id = cursor.getLong(cursor.getColumnIndex("_id"));
-                    String tag_name = cursor.getString(cursor.getColumnIndex("tag"));
-
-                    if (showlist == null) {
-                        Log.e(TAG, "Error on get ShowList fragment");
-                    } else {
-                        showlist.filterByTag(tag_id, tag_name);
-                        viewpager.setCurrentItem(SectionsPagerAdapter.ITEM_LIST_PAGE);
-                    }
-                }
-            }
-            );
-
-
-            return rootView;
-        }
-    }
-
 }
+
