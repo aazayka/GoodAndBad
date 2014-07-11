@@ -1,5 +1,8 @@
 package com.aazayka.goodandbad.app;
 
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
@@ -10,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -17,19 +21,22 @@ import java.util.ArrayList;
  * Created by andrey.zaytsev on 02.06.2014.
  */
 public class ItemsArrayAdapter extends ArrayAdapter<Item> {
+    private static final String DIALOG_IMAGE = "list_image";
     public static final String TAG = "ItemsArrayAdapter";
     private ArrayList<Item> items;
     private SparseBooleanArray mSelectedItemsIds;
+    private FragmentManager fragment_manager;
 
-    public ItemsArrayAdapter(ArrayList<Item> items) {
+    public ItemsArrayAdapter(ArrayList<Item> items, FragmentManager fragment_manager) {
         super(MyApp.getAppContext(), R.layout.item_layout_good, items);
         this.items = items;
+        this.fragment_manager = fragment_manager;
         mSelectedItemsIds = new SparseBooleanArray();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Item item = getItem(position);
+        final Item item = getItem(position);
 //        if (convertView == null) {
             convertView =  ((LayoutInflater) MyApp.getAppContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE))
@@ -40,6 +47,15 @@ public class ItemsArrayAdapter extends ArrayAdapter<Item> {
         TextView listCommentsTextView = (TextView) convertView.findViewById(R.id.listCommentsTextView);
         TextView listTagsTextView = (TextView) convertView.findViewById(R.id.listTagsTextView);
         ImageView listPhotoImageView = (ImageView) convertView.findViewById(R.id.listPhotoImageView);
+        listPhotoImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (item.getImage().isImageExists()) {
+                    ImageFragment.newInstance(item.getImage().getImageFilePath())
+                            .show(fragment_manager, DIALOG_IMAGE);
+                }
+            }
+        });
         listCommentsTextView.setText(item.getComments());
         listTagsTextView.setText(item.getTags());
 
@@ -48,7 +64,7 @@ public class ItemsArrayAdapter extends ArrayAdapter<Item> {
             convertView.setBackgroundColor(Color.LTGRAY);
         }
 
-        if (!item.getImage().getImageFilePath().equals("")) {
+        if (item.getImage().isImageExists()) {
             Log.d(TAG, "Show image " + item.getImage().getImageFilePath());
             listPhotoImageView.setImageBitmap(new Image(item.getImage().getImageFilePath()).resize(100, 100));
         } else {

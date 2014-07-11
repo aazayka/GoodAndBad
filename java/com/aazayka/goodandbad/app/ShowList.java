@@ -70,7 +70,7 @@ public class ShowList extends Fragment {
         tagFilterButton.setVisibility(View.GONE);
 
         items = DBAdapter.get().getFilteredItems(null);
-        arrayAdapter = new ItemsArrayAdapter(items);
+        arrayAdapter = new ItemsArrayAdapter(items, getFragmentManager());
         itemsListView.setAdapter(arrayAdapter);
 
         itemsListView.setOnItemClickListener(new ListView.OnItemClickListener() {

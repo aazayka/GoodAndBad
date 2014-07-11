@@ -16,8 +16,11 @@
     <string name="title_section1">Категории</string>
     <string name="title_section2">Список</string>
     <string name="action_insert">Добавить</string>
+    <string name="action_search">Поиск</string>
+    <string name="search_hint">Что изволите?</string>
     <string name="empty_tag">&lt;ХЗ&gt;</string>
     <string name="error_delete_tag">Невозможно удалить непустую категорию</string>
+
 
 </resources>
 

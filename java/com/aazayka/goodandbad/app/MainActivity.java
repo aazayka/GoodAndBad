@@ -4,18 +4,10 @@ package com.aazayka.goodandbad.app;
 
 import android.app.Activity;
 import android.app.FragmentManager;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,10 +20,6 @@ import android.widget.RadioGroup;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import static android.database.sqlite.SQLiteDatabase.openOrCreateDatabase;
 
 
 public class MainActivity extends Activity {
